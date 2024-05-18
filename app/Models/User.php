@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
+use App\DTO\UserAndRoleCollectionDTO;
+use App\Models\UsersAndRoles;
+use App\Models\Role;
 
 class User extends Authenticatable
 {
@@ -44,7 +47,14 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-    protected function  roles() {
-        
+    public function  roles() {
+        $user_id = $this->id;
+
+        $roles_id = UsersAndRoles::select('role_id')->where('user_id', $user_id)->get();
+
+        $roles = $roles_id->map(function($id) {
+            return Role::where('id', $id->role_id)->first();
+        });
+        return $roles;
     }
 }

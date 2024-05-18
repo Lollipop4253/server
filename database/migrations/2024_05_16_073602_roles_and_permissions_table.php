@@ -16,7 +16,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('role_id')->constrained()->onDelete('cascade');
             $table->foreignId('permission_id')->constrained()->onDelete('cascade');
-            $table->dateTime('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
+            $table->timestamps();
             $table->integer('created_by');
             $table->dateTime('deleted_at')->nullable();
             $table->integer('deleted_by')->nullable();

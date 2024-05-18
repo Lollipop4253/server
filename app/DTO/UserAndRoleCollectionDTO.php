@@ -7,9 +7,7 @@ use App\DTO\UserAndRoleDTO;
 
 class UserAndRoleCollectionDTO
 {
-    public $usersAndRoles;
-
-    public function __construct(Collection $usersAndRoles)
+    public function __construct($usersAndRoles)
     {
         $this->usersAndRoles = $usersAndRoles->map(function ($uAr) {
             return new UserAndRoleDTO(

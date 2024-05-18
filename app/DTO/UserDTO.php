@@ -9,6 +9,8 @@ class UserDTO
     public $email;
     public $birthday;
     public $created_at;
+    public $roles;
+    public $permissions;
 
     public function __construct($id, $username, $email, $birthday, $created_at)
     {

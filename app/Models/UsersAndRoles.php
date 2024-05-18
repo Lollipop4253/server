@@ -4,12 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class UsersAndRoles extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
-    public $table = 'RolesAndPermissions';
+    public $table = 'UsersAndRoles';
 
     protected $fillable = [
         'name',

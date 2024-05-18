@@ -4,12 +4,11 @@ namespace App\DTO;
 
 use Illuminate\Support\Collection;
 use App\DTO\RoleDTO;
+use App\Models\Role;
 
 class RoleCollectionDTO
 {
-    public $roles;
-
-    public function __construct(Collection $roles)
+    public function __construct($roles)
     {
         $this->roles = $roles->map(function ($role) {
             return new RoleDTO(

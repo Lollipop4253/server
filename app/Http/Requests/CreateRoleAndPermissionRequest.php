@@ -27,8 +27,7 @@ class CreateRoleAndPermissionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'role_id'=>'required',
-            'user_id'=>'required',
+            
         ];
     }
 

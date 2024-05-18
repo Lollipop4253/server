@@ -27,8 +27,7 @@ class CreateUserAndRoleRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'permission_id' => 'required',
-            'user_id' => 'required',
+            'role_id' => 'required',
         ];
     }
 

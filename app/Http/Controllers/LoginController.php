@@ -26,14 +26,14 @@ class LoginController extends Controller
 
         $userTokenCount = $user->tokens()->count();
 
-        if ($userTokenCount >= env('MAX_ACTIVE_TOKENS')) {
+        if ($userTokenCount >= env('MAX_ACTIVE_TOKENS', 3)) {
             $oldestToken = $user->tokens()->oldest()->first();
             $oldestToken->revoke();
         }
 
         $tokenResult = $user->createToken('Personal Access Token');
         $token = $tokenResult->token;
-        $token->expires_at = Carbon::now()->addDays(env('TOKEN_EXPIRATION_DAYS'));
+        $token->expires_at = Carbon::now()->addDays(env('TOKEN_EXPIRATION_DAYS', 15));
         $token->save();
 
         return response()->json([

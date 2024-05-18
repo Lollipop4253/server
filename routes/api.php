@@ -6,6 +6,9 @@ use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\MeController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\RoleAndPermissionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,30 +23,40 @@ use App\Http\Controllers\RoleController;
 
 Route::prefix('ref')->group(function () {
 	Route::prefix('user')->group(function () {
-		Route::get('/', [MeController::class, 'getUsers']);
-		Route::get('{id}/role', [MeController::class, 'getUserRoles']);
-		Route::post('{id}/role', [MeController::class, 'giveUserRoles']);
-		Route::delete('{id}/role/{role_id}', [MeController::class, 'hardDeleteRole']);
-		Route::delete('{id}/role/{role_id}/soft', [MeController::class, 'softDeleteRole']);
-		Route::post('{id}/role/{role_id}/restore', [MeController::class, 'restoreDeletedRole']);
+		Route::get('/', [UserController::class, 'getUsers']);
+		Route::get('{id}/role', [UserController::class, 'getUserRoles']);
+		Route::post('{id}/role', [UserController::class, 'giveUserRoles']);
+		Route::delete('{id}/role/{role_id}', [UserController::class, 'hardDeleteRole']);
+		Route::delete('{id}/role/{role_id}/soft', [UserController::class, 'softDeleteRole']);
+		Route::post('{id}/role/{role_id}/restore', [UserController::class, 'restoreDeletedRole']);
 	});
 
 	Route::prefix('policy')->group(function () {
 		Route::get('role', [RoleController::class, 'getRoles']);
 		Route::get('role/{id}', [RoleController::class, 'getTargetRole']);
-		Route::post('role/', [RoleController::class, 'createRole']);
+		Route::post('role', [RoleController::class, 'createRole']);
 		Route::put('role/{id}', [RoleController::class, 'updateRole']);
 		Route::delete('role/{id}', [RoleController::class, 'hardDeleteRole']);
 		Route::delete('role/{id}/soft', [RoleController::class, 'softDeleteRole']);
 		Route::post('role/{id}/restore', [RoleController::class, 'restoreDeletedRole']);
 
-		// Route::get('permission', [PolicyController::class, 'getPermissions']);
-		// Route::get('permission/{id}', [PolicyController::class, 'getTargetPermission']);
-		// Route::post('permission/', [PolicyController::class, 'createPermission']);
-		// Route::put('permission/{id}', [PolicyController::class, 'updatePermission']);
-		// Route::delete('permission/{id}', [PolicyController::class, 'hardDeletePermission']);
-		// Route::delete('permission/{id}/soft', [PolicyController::class, 'softDeletePermission']);
-		// Route::post('permission/{id}/restore', [PolicyController::class, 'restoreDeletedPermission']);
+	
+
+		Route::get('permission', [PermissionController::class, 'getPermissions']);
+		Route::get('permission/{id}', [PermissionController::class, 'getTargetPermission']);
+		Route::post('permission', [PermissionController::class, 'createPermission']);
+		Route::put('permission/{id}', [PermissionController::class, 'updatePermission']);
+		Route::delete('permission/{id}', [PermissionController::class, 'hardDeletePermission']);
+		Route::delete('permission/{id}/soft', [PermissionController::class, 'softDeletePermission']);
+		Route::post('permission/{id}/restore', [PermissionController::class, 'restoreDeletedPermission']);
+
+
+
+		Route::get('role/{id}/permission', [RoleAndPermissionController::class, 'getRolePermission']);
+        Route::get('role/{id}/permission/{permission_id}', [RoleAndPermissionController::class, 'addRolePermission']);
+        Route::delete('role/{id}/permission/{permission_id}', [RoleAndPermissionController::class, 'hardDeleteRolePermission']);
+        Route::delete('role/{id}/permission/{permission_id}/soft', [RoleAndPermissionController::class, 'softDeleteRolePermission']);
+        Route::post('role/{id}/permission/{permission_id}/restore', [RoleAndPermissionController::class, 'restoreDeletedRolePermission']);
 	});
 });
 

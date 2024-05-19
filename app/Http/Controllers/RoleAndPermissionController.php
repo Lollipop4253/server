@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ChangeRoleAndPermissionRequest;
 use Illuminate\Http\Request;
 use App\Models\RolesAndPermissions;
 use App\Models\Permission;
@@ -42,7 +43,7 @@ class RoleAndPermissionController extends Controller
         return response()->json(['status'=> 200]);
     }
 
-    public function hardDeleteRolePermission(Request $request) {
+    public function hardDeleteRolePermission(ChangeRoleAndPermissionRequest $request) {
     	$role_id = $request->id;
     	$permission_id = $request->permission_id;
 
@@ -53,7 +54,7 @@ class RoleAndPermissionController extends Controller
     	return response()->json(['status' => '200']);
     }
 
-    public function softDeleteRolePermission(Request $request) {
+    public function softDeleteRolePermission(ChangeRoleAndPermissionRequest $request) {
     	$role_id = $request->id;
     	$permission_id = $request->permission_id;
 
@@ -66,7 +67,7 @@ class RoleAndPermissionController extends Controller
     	return response()->json(['status' => '200']);
     }
 
-    public function restoreDeletedRolePermission(Request $request) {
+    public function restoreDeletedRolePermission(ChangeRoleAndPermissionRequest $request) {
     	$role_id = $request->id;
     	$permission_id = $request->permission_id;
 

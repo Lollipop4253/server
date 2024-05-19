@@ -6,6 +6,7 @@ use Illuminate\Http\Requests;
 use App\Http\Requests\RegisterRequest;
 use App\DTO\RegisterDTO;
 use App\Models\User;
+use App\Models\UsersAndRoles;
 use Illuminate\Http\Response;
 
 class RegisterController extends Controller
@@ -20,6 +21,12 @@ class RegisterController extends Controller
             'password' => bcrypt($userData->password),
             'birthday' => $userData->birthday,
         ]);
+
+        UsersAndRoles::create([
+    		'user_id' => $user->id,
+    		'role_id' => 3,
+    		'created_by' => 1,
+    	]);
 
         return response()->json($user, Response::HTTP_CREATED);
     }

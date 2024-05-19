@@ -8,6 +8,7 @@ use App\DTO\UserAndRoleCollectionDTO;
 use App\Models\UsersAndRoles;
 use App\Models\Role;
 use App\DTO\RoleCollectionDTO;
+use App\Http\Requests\ChangeUserAndRoleRequest;
 use App\Http\Requests\CreateUserAndRoleRequest;
 use App\Http\Requests\UserRequest;
 
@@ -22,15 +23,13 @@ class UserController extends Controller
 
     	$user_id = $request->id;
 
-    	$usersAndRoles = new UserAndRoleCollectionDTO(UsersAndRoles::select('role_id')->where('user_id', $user_id)->get());
-
     	$roles_id = UsersAndRoles::select('role_id')->where('user_id', $user_id)->get();
 
     	$roles = $roles_id->map(function($id) {
     		return Role::where('id', $id->role_id)->first();
     	});
 
-    	return response()->json($request->createDTO());
+    	return response()->json($roles);
     }
 
     public function giveUserRoles(CreateUserAndRoleRequest $request) {
@@ -54,7 +53,7 @@ class UserController extends Controller
     	
     }
 
-    public function hardDeleteRole(Request $request) {
+    public function hardDeleteRole(ChangeUserAndRoleRequest $request) {
     	$user_id = $request->id;
     	$role_id = $request->role_id;
 
@@ -65,7 +64,7 @@ class UserController extends Controller
     	return response()->json(['status' => '200']);
     }
 
-    public function softDeleteRole(Request $request){
+    public function softDeleteRole(ChangeUserAndRoleRequest $request){
 
     	$user_id = $request->id;
     	$role_id = $request->role_id;
@@ -79,7 +78,7 @@ class UserController extends Controller
     	return response()->json(['status' => '200']);
     }
 
-    public function restoreDeletedRole(Request $request) {
+    public function restoreDeletedRole(ChangeUserAndRoleRequest $request) {
     	$user_id = $request->id;
     	$role_id = $request->role_id;
 

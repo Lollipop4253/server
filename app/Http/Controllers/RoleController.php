@@ -49,7 +49,7 @@ class RoleController extends Controller
     	return response()->json($role);
     }
 
-    public function hardDeleteRole(Request $request) {
+    public function hardDeleteRole(ChangeRoleRequest $request) {
 
     	$role_id = $request->id;
 
@@ -60,7 +60,7 @@ class RoleController extends Controller
     	return response()->json(['status' => '200']);
     }
 
-    public function softDeleteRole(Request $request) {
+    public function softDeleteRole(ChangeRoleRequest $request) {
 
     	$role_id = $request->id;
     	$user = $request->user();
@@ -74,7 +74,7 @@ class RoleController extends Controller
     	return response()->json(['status' => '200']);
     }
 
-    public function restoreDeletedRole(Request $request) {
+    public function restoreDeletedRole(ChangeRoleRequest $request) {
 
     	$role_id = $request->id;
 

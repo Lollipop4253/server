@@ -50,8 +50,6 @@ class User extends Authenticatable
     public function  roles() {
         $user_id = $this->id;
 
-        $usersAndRoles = new UserAndRoleCollectionDTO(UsersAndRoles::select('role_id')->where('user_id', $user_id)->get());
-
         $roles_id = UsersAndRoles::select('role_id')->where('user_id', $user_id)->get();
 
         $roles = $roles_id->map(function($id) {

@@ -49,7 +49,7 @@ class PermissionController extends Controller
     	return response()->json($permission);
     }
 
-    public function hardDeletePermission(Request $request) {
+    public function hardDeletePermission(ChangePermissionRequest $request) {
 
     	$permission_id = $request->id;
 
@@ -60,7 +60,7 @@ class PermissionController extends Controller
     	return response()->json(['status' => '200']);
     }
 
-    public function softDeletePermission(Request $request) {
+    public function softDeletePermission(ChangePermissionRequest $request) {
 
     	$permission_id = $request->id;
     	$user = $request->user();
@@ -74,7 +74,7 @@ class PermissionController extends Controller
     	return response()->json(['status' => '200']);
     }
 
-    public function restoreDeletedPermission(Request $request) {
+    public function restoreDeletedPermission(ChangePermissionRequest $request) {
 
     	$permission_id = $request->id;
 

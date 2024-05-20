@@ -11,6 +11,7 @@ use App\DTO\RoleCollectionDTO;
 use App\Http\Requests\ChangeUserAndRoleRequest;
 use App\Http\Requests\CreateUserAndRoleRequest;
 use App\Http\Requests\UserRequest;
+use App\Http\Controllers\LogsConroller;
 
 class UserController extends Controller
 {
@@ -44,11 +45,14 @@ class UserController extends Controller
     		return response()->json(['status' => '501']);
     	}
 
-		UsersAndRoles::create([
+		$usersAndRoles = UsersAndRoles::create([
     		'user_id' => $user_id,
     		'role_id' => $role_id,
     		'created_by' => $request->user()->id,
     	]);
+
+        $Log = new LogsController();
+        $Log->createLogs('UsersAndRoles', $usersAndRoles->id,'null',$usersAndRoles->role_id, $request->user()->id);
     	return response()->json(['status' => '200']);
     	
     }
@@ -58,6 +62,10 @@ class UserController extends Controller
     	$role_id = $request->role_id;
 
     	$userAndRoles = UsersAndRoles::withTrashed()->where('user_id', $user_id)->where('role_id', $role_id);
+
+        $forLog = $userAndRoles->first();
+        $Log = new LogsController();
+        $Log->createLogs('UsersAndRoles', $forLog->id, $forLog->role_id,'null', $request->user()->id);
 
     	$userAndRoles->forcedelete();
 
@@ -70,6 +78,9 @@ class UserController extends Controller
     	$role_id = $request->role_id;
 
     	$userAndRoles = UsersAndRoles::where('user_id', $user_id)->where('role_id', $role_id)->first();
+
+        $Log = new LogsController();
+        $Log->createLogs('UsersAndRoles', $userAndRoles->id, $userAndRoles->role_id,'null',$request->user()->id);
 
     	$userAndRoles->deleted_by = $request->user()->id;
     	$userAndRoles->delete();
@@ -85,6 +96,10 @@ class UserController extends Controller
     	$userAndRoles = UsersAndRoles::withTrashed()->where('user_id', $user_id)->where('role_id', $role_id)->first();
 
     	$userAndRoles->restore();
+
+        $Log = new LogsController();
+        $Log->createLogs('UsersAndRoles', $userAndRoles->id, 'null', $userAndRoles->role_id,$request->user()->id);
+
     	$userAndRoles->deleted_by = null;
     	$userAndRoles->save();
     	

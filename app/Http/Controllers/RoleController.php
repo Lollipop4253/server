@@ -31,6 +31,9 @@ class RoleController extends Controller
     		'created_by' => $user->id,
     	]);
 
+        $Log = new LogsController();
+        $Log->createLogs('Roles', $new_role->id, 'null', $new_role->name, $user->id);
+
     	return response()->json($new_role);
     }
 
@@ -39,6 +42,9 @@ class RoleController extends Controller
     	$user = $request->user();
 
     	$role = Role::where('id', $request->id)->first();
+
+        $Log = new LogsController();
+        $Log->createLogs('Roles', $role->id, $role->name, $request->input('name'), $user->id);
 
     	$role->update([
     		'name' => $request->input('name'),
@@ -55,6 +61,10 @@ class RoleController extends Controller
 
     	$role = Role::withTrashed()->find($role_id);
 
+        $forLog = $role->first();
+        $Log = new LogsController();
+        $Log->createLogs('Roles', $forLog->id, $forLog->name, 'null', $request->user()->id);
+
     	$role->forcedelete();
 
     	return response()->json(['status' => '200']);
@@ -66,6 +76,9 @@ class RoleController extends Controller
     	$user = $request->user();
 
     	$role = Role::where('id', $role_id)->first();
+
+        $Log = new LogsController();
+        $Log->createLogs('Roles', $role->id, $role->name, 'null', $user->id);
 
     	$role->deleted_by = $user->id;
     	$role->delete();
@@ -79,6 +92,10 @@ class RoleController extends Controller
     	$role_id = $request->id;
 
     	$role = Role::withTrashed()->find($role_id);
+
+        $forLog = $permission->first();
+        $Log = new LogsController();
+        $Log->createLogs('Roles', $forLog->id, 'null', $forLog->name, $request->user()->id);
 
     	$role->restore();
     	$role->deleted_by = null;

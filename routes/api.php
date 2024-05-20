@@ -9,6 +9,7 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\RoleAndPermissionController;
+use App\Http\Controllers\LogsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,6 +31,7 @@ Route::middleware('checkRole')->group(function () {
 			Route::delete('{id}/role/{role_id}', [UserController::class, 'hardDeleteRole']);
 			Route::delete('{id}/role/{role_id}/soft', [UserController::class, 'softDeleteRole']);
 			Route::post('{id}/role/{role_id}/restore', [UserController::class, 'restoreDeletedRole']);
+			Route::get('{id}/story', [LogsController::class, 'getUserLogs']);
 		});
 
 		Route::prefix('policy')->group(function () {
@@ -40,6 +42,7 @@ Route::middleware('checkRole')->group(function () {
 			Route::delete('role/{id}', [RoleController::class, 'hardDeleteRole']);
 			Route::delete('role/{id}/soft', [RoleController::class, 'softDeleteRole']);
 			Route::post('role/{id}/restore', [RoleController::class, 'restoreDeletedRole']);
+			Route::get('role/{id}/story', [LogsController::class, 'getRoleLogs']);
 
 
 
@@ -50,6 +53,7 @@ Route::middleware('checkRole')->group(function () {
 			Route::delete('permission/{id}', [PermissionController::class, 'hardDeletePermission']);
 			Route::delete('permission/{id}/soft', [PermissionController::class, 'softDeletePermission']);
 			Route::post('permission/{id}/restore', [PermissionController::class, 'restoreDeletedPermission']);
+			Route::get('permission/{id}/story', [LogsController::class, 'getPermissionLogs']);
 
 
 

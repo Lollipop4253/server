@@ -17,6 +17,7 @@ class checkRole
             'hardDeleteRole' => 'update-user',
             'softDeleteRole' => 'update-user',
             'restoreDeletedRole' => 'update-user',
+            'getUserLogs' => 'get-story-user',
 
             'getRoles' => 'get-list-role',
             'getTargetRole' => 'read-role',
@@ -25,6 +26,7 @@ class checkRole
             'hardDeleteRole' => 'delete-rol',
             'softDeleteRole' => 'delete-rol',
             'restoreDeletedRole' => 'restore-role',
+            'getRoleLogs' => 'get-story-role',
 
             'getPermissions' => 'get-list-permission',
             'getTargetPermission' => 'read-permission',
@@ -33,6 +35,7 @@ class checkRole
             'hardDeletePermission' => 'delete-permission',
             'softDeletePermission' => 'delete-permission',
             'restoreDeletedPermission' => 'restore-permission',
+            'getPermissionLogs' => 'get-story-permission',
 
             'getRolePermission' => 'read-role',
             'addRolePermission' => 'update-role',

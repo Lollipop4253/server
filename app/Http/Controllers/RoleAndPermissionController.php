@@ -34,11 +34,14 @@ class RoleAndPermissionController extends Controller
             return response()->json(['status'=> 501]);
         }
 
-        RolesAndPermissions::create([
+        $RAP = RolesAndPermissions::create([
             'role_id' => $role_id,
             'permission_id' => $permission_id,
             'created_by' => $user_id
         ]);
+
+        $Log = new LogsController();
+        $Log->createLogs('RolesAndPermission', $RAP->id,'null',$RAP->permission_id, $request->user()->id);
 
         return response()->json(['status'=> 200]);
     }
@@ -48,6 +51,11 @@ class RoleAndPermissionController extends Controller
     	$permission_id = $request->permission_id;
 
     	$RolesAndPermissions = RolesAndPermissions::withTrashed()->where('role_id', $role_id)->where('permission_id', $permission_id);
+
+        $forLog = $RolesAndPermissions->first();
+        $Log = new LogsController();
+        $Log->createLogs('RolesAndPermission', $forLog->id, $forLog->permission_id, 'null', $request->user()->id);
+
 
     	$RolesAndPermissions->forcedelete();
 
@@ -59,6 +67,9 @@ class RoleAndPermissionController extends Controller
     	$permission_id = $request->permission_id;
 
     	$RolesAndPermissions = RolesAndPermissions::withTrashed()->where('role_id', $role_id)->where('permission_id', $permission_id)->first();
+
+        $Log = new LogsController();
+        $Log->createLogs('RolesAndPermission', $RolesAndPermissions->id, $RolesAndPermissions->permission_id, 'null', $request->user()->id);
 
     	$RolesAndPermissions->deleted_by = $request->user()->id;
     	$RolesAndPermissions->delete();
@@ -72,6 +83,9 @@ class RoleAndPermissionController extends Controller
     	$permission_id = $request->permission_id;
 
     	$RolesAndPermissions = RolesAndPermissions::withTrashed()->where('role_id', $role_id)->where('permission_id', $permission_id)->first();
+
+        $Log = new LogsController();
+        $Log->createLogs('RolesAndPermission', $RolesAndPermissions->id, 'null', $RolesAndPermissions->permission_id, $request->user()->id);
 
     	$RolesAndPermissions->restore();
     	$RolesAndPermissions->deleted_by = null;

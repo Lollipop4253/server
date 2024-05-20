@@ -17,6 +17,7 @@ class createPermissions extends Seeder
             ['name' => 'update-user', 'description' => 'can update user', 'code' => '4', 'created_by' => '1'],
             ['name' => 'delete-user', 'description' => 'can delete user', 'code' => '5', 'created_by' => '1'],
             ['name' => 'restore-user', 'description' => 'can restore user', 'code' => '6', 'created_by' => '1'],
+            ['name' => 'get-story-user', 'description' => 'can check user story', 'code' => '19', 'created_by' => '1'],
 
             ['name' => 'get-list-role', 'description' => 'can get list of roles', 'code' => '7', 'created_by' => '1'],  
             ['name' => 'read-role', 'description' => 'can read role', 'code' => '8', 'created_by' => '1'],
@@ -24,6 +25,7 @@ class createPermissions extends Seeder
             ['name' => 'update-role', 'description' => 'can update role', 'code' => '10', 'created_by' => '1'],
             ['name' => 'delete-role', 'description' => 'can delete role', 'code' => '11', 'created_by' => '1'],
             ['name' => 'restore-role', 'description' => 'can restore deleted role', 'code' => '12', 'created_by' => '1'],
+            ['name' => 'get-story-role', 'description' => 'can check role story', 'code' => '20', 'created_by' => '1'],
             
             ['name' => 'get-list-permission', 'description' => 'can get list of permissions', 'code' => '13', 'created_by' => '1'],  
             ['name' => 'read-permission', 'description' => 'can read permission', 'code' => '14', 'created_by' => '1'],
@@ -31,6 +33,7 @@ class createPermissions extends Seeder
             ['name' => 'update-permission', 'description' => 'can update permission', 'code' => '16', 'created_by' => '1'],
             ['name' => 'delete-permission', 'description' => 'can delete permission', 'code' => '17', 'created_by' => '1'],
             ['name' => 'restore-permission', 'description' => 'can restore permission', 'code' => '18', 'created_by' => '1'],
+            ['name' => 'get-story-permission', 'description' => 'can check permission story', 'code' => '21', 'created_by' => '1'],
         ];
 
         foreach ($permissions as $permission) {

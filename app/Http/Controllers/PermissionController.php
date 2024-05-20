@@ -31,6 +31,9 @@ class PermissionController extends Controller
     		'created_by' => $user->id,
     	]);
 
+        $Log = new LogsController();
+        $Log->createLogs('Permission', $new_permission->id,'null', $new_permission->name, $user->id);
+
     	return response()->json($new_permission);
     }
 
@@ -39,6 +42,9 @@ class PermissionController extends Controller
     	$user = $request->user();
 
     	$permission = Permission::where('id', $request->id)->first();
+
+        $Log = new LogsController();
+        $Log->createLogs('Permission', $permission->id, $permission->name, $request->input('name'), $user->id);
 
     	$permission->update([
     		'name' => $request->input('name'),
@@ -55,6 +61,10 @@ class PermissionController extends Controller
 
     	$permission = Permission::withTrashed()->find($permission_id);
 
+        $forLog = $permission->first();
+        $Log = new LogsController();
+        $Log->createLogs('Permission', $forLog->id, $forLog->name, 'null', $request->user()->id);
+
     	$permission->forcedelete();
 
     	return response()->json(['status' => '200']);
@@ -68,6 +78,10 @@ class PermissionController extends Controller
     	$permission = Permission::where('id', $permission_id)->first();
 
     	$permission->deleted_by = $user->id;
+
+        $Log = new LogsController();
+        $Log->createLogs('Permission', $permission->id, $permission->name, 'null', $user->id);
+
     	$permission->delete();
     	$permission->save();
 
@@ -79,6 +93,10 @@ class PermissionController extends Controller
     	$permission_id = $request->id;
 
     	$permission = Permission::withTrashed()->find($permission_id);
+
+        $forLog = $permission->first();
+        $Log = new LogsController();
+        $Log->createLogs('Permission', $forLog->id, 'null', $forLog->name, $request->user()->id);
 
     	$permission->restore();
     	$permission->deleted_by = null;

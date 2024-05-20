@@ -23,11 +23,11 @@ class RegisterRequest extends FormRequest
     public function rules(): array
     {
         return [
-            // 'username' => 'required|string|unique:users|alpha|regex:/^[A-Z]/u|min:7',
-            // 'email' => 'required|string|email|unique:users',
-            // 'password' => 'required|string|min:8|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/',
-            // 'c_password' => 'required|string|same:password',
-            // 'birthday' => 'required|date',
+            'username' => 'required|string|unique:users|alpha|regex:/^[A-Z]/|min:7',
+            'email' => 'required|string|email|unique:users',
+            'password' => 'required|string|min:8|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/',
+            'c_password' => 'required|string|same:password',
+            'birthday' => 'required|date',
         ];
     }
 

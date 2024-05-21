@@ -101,6 +101,9 @@ class LogsController extends Controller
 
                 $this->createLogs($table, $log->row_id, $curent_value, 'null', $user->id);
             }
+            else if ($curent_value == "null") {
+                //
+            }
             else {
                 $columns = Schema::getColumnListing($table);
                 $target_column = null;
@@ -113,7 +116,7 @@ class LogsController extends Controller
                         break;
                     }
                 }
-
+                
                 DB::table($table)->where('id', $log->row_id)->update([$target_column => $prev_value]);
 
                 $this->createLogs($table, $log->row_id, $curent_value, $prev_value, $user->id);

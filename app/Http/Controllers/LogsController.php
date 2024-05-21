@@ -6,7 +6,9 @@ use Illuminate\Http\Request;
 use App\Models\ChangeLogs;
 use App\Models\Permission;
 use App\Models\RolesAndPermissions;
-use App\Models\UserAndRoles;
+use App\Models\UsersAndRoles;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 
 class LogsController extends Controller
@@ -30,23 +32,34 @@ class LogsController extends Controller
 
     public function getRoleLogs(Request $request) {
     	$id = $request->id;
-    	$LogsRole = ChangeLogs::where('table_name','Role')->where('row_id',$id)->get();
+    	$LogsRole = ChangeLogs::where('table_name','Roles')->where('row_id',$id)->get();
 
-    	$temp1 = ChangeLogs::where('table_name','UserAndRoles')->get();
+    	$temp1 = ChangeLogs::where('table_name','UsersAndRoles')->get();
     	$LogsUsersAndRoles = [];
     	foreach ($temp1 as $log) {
     		$t = UsersAndRoles::where('id',$log->row_id)->first();
-    		if($t->role_id == $id) {
-    			array_push($LogsUsersAndRoles, $log);
-    		}
+            try {
+                if($t->role_id == $id) {
+                    array_push($LogsUsersAndRoles, $log);
+                }
+            }
+            catch (\Exception $e) {
+                continue;
+            }
+    		
     	}
     	$temp2 = ChangeLogs::where('table_name','RolesAndPermission')->get();
     	$LogsRolesAndPermissions = [];
     	foreach ($temp2 as $log) {
     		$t = RolesAndPermissions::where('id',$log->row_id)->first();
-    		if($t->role_id == $id) {
-    			array_push($LogsRolesAndPermissions, $log);
-    		}
+            try {
+                if($t->role_id == $id) {
+                    array_push($LogsRolesAndPermissions, $log);
+                }
+            }
+    		catch (\Exception $e) {
+                continue;
+            }
     	}
 
     	$Logs = $LogsRole->concat($LogsUsersAndRoles)->concat($LogsRolesAndPermissions);
@@ -68,5 +81,52 @@ class LogsController extends Controller
 
     	$Logs = $LogsRole->concat($LogsRolesAndPermissions);
     	return $Logs;
+    }
+
+    public function restoreRow(Request $request) {
+        $log_id = $request->id;
+        $user = $request->user();
+
+        DB::beginTransaction();
+
+        try {
+            $log = ChangeLogs::where('id', $log_id)->first();
+
+            $table = $log->table_name;
+            $curent_value = $log->value_after;
+            $prev_value = $log->value_before;
+
+            if ($prev_value == 'null') {
+                DB::table($table)->where('id', $log->row_id)->delete();
+
+                $this->createLogs($table, $log->row_id, $curent_value, 'null', $user->id);
+            }
+            else {
+                $columns = Schema::getColumnListing($table);
+                $target_column = null;
+
+                foreach ($columns as $column) {
+                    $result = DB::table($table)->where($column, $curent_value)->first();
+                
+                    if ($result) {
+                        $target_column = $column;
+                        break;
+                    }
+                }
+
+                DB::table($table)->where('id', $log->row_id)->update([$target_column => $prev_value]);
+
+                $this->createLogs($table, $log->row_id, $curent_value, $prev_value, $user->id);
+            }
+
+            DB::commit();
+
+            return response()->json(['status' => '200']);
+        }
+        catch (\Exception $e) {
+            DB::rollBack();
+
+            throw $e;
+        }
     }
 }

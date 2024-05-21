@@ -24,50 +24,97 @@ class RoleController extends Controller
 
     	$user = $request->user();
 
-    	$new_role = Role::create([
-    		'name' => $request->input('name'),
-    		'description' => $request->input('description'),
-    		'code' => $request->input('code'),
-    		'created_by' => $user->id,
-    	]);
+        DB::beginTransaction();
 
-        $Log = new LogsController();
-        $Log->createLogs('Roles', $new_role->id, 'null', $new_role->name, $user->id);
+        try {
+            $new_role = Role::create([
+                'name' => $request->input('name'),
+                'description' => $request->input('description'),
+                'code' => $request->input('code'),
+                'created_by' => $user->id,
+            ]);
 
-    	return response()->json($new_role);
+            $Log = new LogsController();
+            $Log->createLogs('Roles', $new_role->id, 'null', $new_role->name, $user->id);
+
+            DB::commit();
+
+            return response()->json($new_role);
+        }
+        catch (\Exception $e) {
+            DB::rollBack();
+
+            throw $e;
+        }
+
+    	
     }
 
     public function updateRole(ChangeRoleRequest $request) {
 
     	$user = $request->user();
 
-    	$role = Role::where('id', $request->id)->first();
+        DB::beginTransaction();
 
-        $Log = new LogsController();
-        $Log->createLogs('Roles', $role->id, $role->name, $request->input('name'), $user->id);
+        try {
+            $role = Role::where('id', $request->id)->first();
 
-    	$role->update([
-    		'name' => $request->input('name'),
-    		'description' => $request->input('description'),
-    		'code' => $request->input('code'),
-    	]);
+            $Log = new LogsController();
 
-    	return response()->json($role);
+            if ($role->name != $request->input('name')) {
+                $Log->createLogs('Roles', $role->id, $role->name, $request->input('name'), $user->id);
+            }
+            if ($role->description != $request->input('description')) {
+                $Log->createLogs('Roles', $role->id, $role->description, $request->input('description'), $user->id);
+            }
+            if ($role->code != $request->input('code')) {
+                $Log->createLogs('Roles', $role->id, $role->code, $request->input('code'), $user->id);
+            }
+
+            $role->update([
+                'name' => $request->input('name'),
+                'description' => $request->input('description'),
+                'code' => $request->input('code'),
+            ]);
+
+            DB::commit();
+
+            return response()->json($role);
+        }
+        catch (\Exception $e) {
+            DB::rollBack();
+
+            throw $e;
+        }
+
+    	
     }
 
     public function hardDeleteRole(ChangeRoleRequest $request) {
 
     	$role_id = $request->id;
 
-    	$role = Role::withTrashed()->find($role_id);
+        DB::beginTransaction();
 
-        $forLog = $role->first();
-        $Log = new LogsController();
-        $Log->createLogs('Roles', $forLog->id, $forLog->name, 'null', $request->user()->id);
+        try {
+            $role = Role::withTrashed()->find($role_id);
 
-    	$role->forcedelete();
+            $forLog = $role->first();
+            $Log = new LogsController();
+            $Log->createLogs('Roles', $forLog->id, $forLog->name, 'null', $request->user()->id);
 
-    	return response()->json(['status' => '200']);
+            $role->forcedelete();
+
+            DB::commit();
+
+            return response()->json(['status' => '200']);
+        }
+        catch (\Exception $e) {
+            DB::rollBack();
+
+            throw $e;
+        }
+    	
     }
 
     public function softDeleteRole(ChangeRoleRequest $request) {
@@ -75,32 +122,56 @@ class RoleController extends Controller
     	$role_id = $request->id;
     	$user = $request->user();
 
-    	$role = Role::where('id', $role_id)->first();
+        DB::beginTransaction();
 
-        $Log = new LogsController();
-        $Log->createLogs('Roles', $role->id, $role->name, 'null', $user->id);
+        try {
+            $role = Role::where('id', $role_id)->first();
 
-    	$role->deleted_by = $user->id;
-    	$role->delete();
-    	$role->save();
+            $Log = new LogsController();
+            $Log->createLogs('Roles', $role->id, $role->name, 'null', $user->id);
 
-    	return response()->json(['status' => '200']);
+            $role->deleted_by = $user->id;
+            $role->delete();
+            $role->save();
+
+            DB::commit();
+
+            return response()->json(['status' => '200']);
+        }
+        catch (\Exception $e) {
+            DB::rollBack();
+
+            throw $e;
+        }
     }
 
     public function restoreDeletedRole(ChangeRoleRequest $request) {
 
     	$role_id = $request->id;
 
-    	$role = Role::withTrashed()->find($role_id);
+        DB::beginTransaction();
 
-        $forLog = $permission->first();
-        $Log = new LogsController();
-        $Log->createLogs('Roles', $forLog->id, 'null', $forLog->name, $request->user()->id);
+        try {
+            $role = Role::withTrashed()->find($role_id);
 
-    	$role->restore();
-    	$role->deleted_by = null;
-    	$role->save();
+            $forLog = $permission->first();
+            $Log = new LogsController();
+            $Log->createLogs('Roles', $forLog->id, 'null', $forLog->name, $request->user()->id);
+
+            $role->restore();
+            $role->deleted_by = null;
+            $role->save();
+
+            DB::commit();
+            
+            return response()->json(['status' => '200']);
+        }
+        catch (\Exception $e) {
+            DB::rollBack();
+
+            throw $e;
+        }
+
     	
-    	return response()->json(['status' => '200']);
     }
 }

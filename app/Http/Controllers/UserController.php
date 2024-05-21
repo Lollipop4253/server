@@ -12,6 +12,7 @@ use App\Http\Requests\ChangeUserAndRoleRequest;
 use App\Http\Requests\CreateUserAndRoleRequest;
 use App\Http\Requests\UserRequest;
 use App\Http\Controllers\LogsConroller;
+use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
@@ -42,18 +43,32 @@ class UserController extends Controller
     	$count = UsersAndRoles::where('user_id', $user_id)->where('role_id', $role_id)->count();
 
     	if ($count) {
-    		return response()->json(['status' => '501']);
+    		return response()->json(['status' => '418']);
     	}
 
-		$usersAndRoles = UsersAndRoles::create([
-    		'user_id' => $user_id,
-    		'role_id' => $role_id,
-    		'created_by' => $request->user()->id,
-    	]);
+        DB::beginTransaction();
 
-        $Log = new LogsController();
-        $Log->createLogs('UsersAndRoles', $usersAndRoles->id,'null',$usersAndRoles->role_id, $request->user()->id);
-    	return response()->json(['status' => '200']);
+        try {
+            $usersAndRoles = UsersAndRoles::create([
+                'user_id' => $user_id,
+                'role_id' => $role_id,
+                'created_by' => $request->user()->id,
+            ]);
+
+            $Log = new LogsController();
+            $Log->createLogs('UsersAndRoles', $usersAndRoles->id,'null',$usersAndRoles->role_id, $request->user()->id);
+
+            DB::commit();
+
+            return response()->json(['status' => '200']);
+        }
+        catch (\Exception $e) {
+            DB::rollBack();
+
+            throw $e;
+        }
+
+		
     	
     }
 
@@ -61,15 +76,27 @@ class UserController extends Controller
     	$user_id = $request->id;
     	$role_id = $request->role_id;
 
-    	$userAndRoles = UsersAndRoles::withTrashed()->where('user_id', $user_id)->where('role_id', $role_id);
+        DB::beginTransaction();
 
-        $forLog = $userAndRoles->first();
-        $Log = new LogsController();
-        $Log->createLogs('UsersAndRoles', $forLog->id, $forLog->role_id,'null', $request->user()->id);
+        try {
+            $userAndRoles = UsersAndRoles::withTrashed()->where('user_id', $user_id)->where('role_id', $role_id);
 
-    	$userAndRoles->forcedelete();
+            $forLog = $userAndRoles->first();
+            $Log = new LogsController();
+            $Log->createLogs('UsersAndRoles', $forLog->id, $forLog->role_id,'null', $request->user()->id);
 
-    	return response()->json(['status' => '200']);
+            $userAndRoles->forcedelete();
+
+            DB::commit();
+
+            return response()->json(['status' => '200']);
+        }
+        catch (\Exception $e) {
+            DB::rollBack();
+
+            throw $e;
+        }
+    	
     }
 
     public function softDeleteRole(ChangeUserAndRoleRequest $request){
@@ -77,32 +104,57 @@ class UserController extends Controller
     	$user_id = $request->id;
     	$role_id = $request->role_id;
 
-    	$userAndRoles = UsersAndRoles::where('user_id', $user_id)->where('role_id', $role_id)->first();
+        DB::beginTransaction();
 
-        $Log = new LogsController();
-        $Log->createLogs('UsersAndRoles', $userAndRoles->id, $userAndRoles->role_id,'null',$request->user()->id);
+        try {
+            $userAndRoles = UsersAndRoles::where('user_id', $user_id)->where('role_id', $role_id)->first();
 
-    	$userAndRoles->deleted_by = $request->user()->id;
-    	$userAndRoles->delete();
-    	$userAndRoles->save();
+            $Log = new LogsController();
+            $Log->createLogs('UsersAndRoles', $userAndRoles->id, $userAndRoles->role_id,'null',$request->user()->id);
 
-    	return response()->json(['status' => '200']);
+            $userAndRoles->deleted_by = $request->user()->id;
+            $userAndRoles->delete();
+            $userAndRoles->save();
+
+            DB::commit();
+
+            return response()->json(['status' => '200']);
+        }
+        catch (\Exception $e) {
+            DB::rollBack();
+
+            throw $e;
+        }
+
+    	
     }
 
     public function restoreDeletedRole(ChangeUserAndRoleRequest $request) {
     	$user_id = $request->id;
     	$role_id = $request->role_id;
 
-    	$userAndRoles = UsersAndRoles::withTrashed()->where('user_id', $user_id)->where('role_id', $role_id)->first();
+        DB::beginTransaction();
 
-    	$userAndRoles->restore();
+        try {
+            $userAndRoles = UsersAndRoles::withTrashed()->where('user_id', $user_id)->where('role_id', $role_id)->first();
 
-        $Log = new LogsController();
-        $Log->createLogs('UsersAndRoles', $userAndRoles->id, 'null', $userAndRoles->role_id,$request->user()->id);
+            $userAndRoles->restore();
 
-    	$userAndRoles->deleted_by = null;
-    	$userAndRoles->save();
+            $Log = new LogsController();
+            $Log->createLogs('UsersAndRoles', $userAndRoles->id, 'null', $userAndRoles->role_id,$request->user()->id);
+
+            $userAndRoles->deleted_by = null;
+            $userAndRoles->save();
+
+            DB::commit();
+            
+            return response()->json(['status' => '200']);
+        }
+        catch (\Exception $e) {
+            DB::rollBack();
+
+            throw $e;
+        }
     	
-    	return response()->json(['status' => '200']);
     }
 }

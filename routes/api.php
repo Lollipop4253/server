@@ -64,6 +64,10 @@ Route::middleware('checkRole')->group(function () {
 			Route::post('role/{id}/permission/{permission_id}/restore', [RoleAndPermissionController::class, 'restoreDeletedRolePermission']);
 		});
 	});
+
+	Route::prefix('log')->group(function() {
+		Route::get('{id}/restore', [LogsController::class, 'restoreRow']);
+	});
 });
 
 

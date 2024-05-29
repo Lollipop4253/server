@@ -44,7 +44,7 @@ class LoginController extends Controller
         OtpCode::create([
             'user_id' => $user->id,
             'code' => $otp,
-            'expires_at' => Carbon::now()->addMinutes(3),
+            'expires_at' => Carbon::now()->addMinutes(env('CODES_EXPIRATION_MINUTES', 3)),
         ]);
 
         Mail::raw("Ваш одноразовый пароль: $otp", function ($message) use ($user) {

@@ -32,7 +32,7 @@ class RegisterController extends Controller
                 'created_by' => 1,
             ]);
             $Log = new LogsController();
-            $Log->createLogs('User', $user->id,'null', $user->username, $user->id);
+            $Log->createLogs('Users', $user->id,'null', $user->username, $user->id);
             $Log->createLogs('UsersAndRoles', $role->id, $role->role_id,'null', $user->id);
 
             DB::commit();

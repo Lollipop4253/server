@@ -57,7 +57,12 @@ class RoleController extends Controller
         DB::beginTransaction();
 
         try {
+            // (new DB())->transaction(function () {
+
+            // })
             $role = Role::where('id', $request->id)->first();
+
+            // $oldValue = json_encode($role);
 
             $Log = new LogsController();
 
@@ -67,9 +72,11 @@ class RoleController extends Controller
             if ($role->description != $request->input('description')) {
                 $Log->createLogs('Roles', $role->id, $role->description, $request->input('description'), $user->id);
             }
+
             if ($role->code != $request->input('code')) {
                 $Log->createLogs('Roles', $role->id, $role->code, $request->input('code'), $user->id);
             }
+            
 
             $role->update([
                 'name' => $request->input('name'),
@@ -77,6 +84,9 @@ class RoleController extends Controller
                 'code' => $request->input('code'),
             ]);
 
+            // $newValue = Role::find($request_id);    
+
+            
             DB::commit();
 
             return response()->json($role);

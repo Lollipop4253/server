@@ -31,7 +31,7 @@ Route::middleware('checkRole')->group(function () {
 			Route::delete('{id}/role/{role_id}', [UserController::class, 'hardDeleteRole']);
 			Route::delete('{id}/role/{role_id}/soft', [UserController::class, 'softDeleteRole']);
 			Route::post('{id}/role/{role_id}/restore', [UserController::class, 'restoreDeletedRole']);
-			Route::get('{id}/story', [LogsController::class, 'getUserLogs']);
+			Route::get('{id}/story', [UserController::class, 'story']);
 		});
 
 		Route::prefix('policy')->group(function () {

@@ -10,6 +10,7 @@ use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\RoleAndPermissionController;
 use App\Http\Controllers\LogsController;
+use App\Http\Controllers\OtpController;
 
 /*
 |--------------------------------------------------------------------------
@@ -100,3 +101,5 @@ Route::prefix('auth')->group(function () {
 		Route::get('tokens', [MeController::class, "getTokens"]);
 	});
 });
+
+Route::post('otp/verify', [OtpController::class, 'verifyOtp'])->name('otp.verify');

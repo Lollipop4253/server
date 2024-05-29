@@ -11,7 +11,8 @@ use Illuminate\Support\Facades\Hash;
 use Laravel\Passport\Passport;
 use Laravel\Passport\Token;
 use Carbon\Carbon;
-
+use App\Models\OtpCode;
+use Illuminate\Support\Facades\Mail;
 class LoginController extends Controller
 {
     public function login(LoginRequest $request) {
@@ -24,23 +25,34 @@ class LoginController extends Controller
             return response()->json(['message' => 'Unauthorized'], 401);
         }
 
-        $userTokenCount = $user->tokens()->count();
+        $otp_count = OtpCode::where('user_id', $user->id)->count();
 
-        if ($userTokenCount >= env('MAX_ACTIVE_TOKENS', 3)) {
-            $oldestToken = $user->tokens()->oldest()->first();
-            $oldestToken->revoke();
+        if ($otp_count >= env("MAX_OTP_CODES", 3)) {
+
+            $now = Carbon::now();
+            $time = OtpCode::where('user_id', $user->id)->oldest()->get()->last();
+            if ($now->diffInSeconds($time->created_at) >= 30) {
+                OtpCode::where('user_id', $user->id)->latest()->first()->delete();
+            }
+            else {
+                return response()->json(['error' => 'Подожди немного']);
+            }
         }
 
-        $tokenResult = $user->createToken('Personal Access Token');
-        $token = $tokenResult->token;
-        $token->expires_at = Carbon::now()->addDays(env('TOKEN_EXPIRATION_DAYS', 15));
-        $token->save();
+        $otp = rand(100000, 999999);
 
-        return response()->json([
-            'access_token' => $tokenResult->accessToken,
-            'token_type' => 'Bearer',
-            'expires_at' => Carbon::parse($tokenResult->token->expires_at)->toDateTimeString(),
+        OtpCode::create([
+            'user_id' => $user->id,
+            'code' => $otp,
+            'expires_at' => Carbon::now()->addMinutes(3),
         ]);
+
+        Mail::raw("Ваш одноразовый пароль: $otp", function ($message) use ($user) {
+            $message->to($user->email)
+                    ->subject('Ваш одноразовый пароль');
+        });
+
+        return response()->json(['message' => 'send code']);
     }
 
 
